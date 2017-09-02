@@ -2,8 +2,8 @@ import tensorflow as tf
 
 
 class Generator:
-    def __init__(self, depths=[1024, 512, 256, 128], s_size=4):
-        self.depths = depths + [3]
+    def __init__(self, depths=[1024, 512, 256, 128], s_size=4,channel = 3):
+        self.depths = depths + [channel]
         self.s_size = s_size
         self.reuse = False
 
@@ -36,8 +36,8 @@ class Generator:
 
 
 class Discriminator:
-    def __init__(self, depths=[64, 128, 256, 512]):
-        self.depths = [3] + depths
+    def __init__(self, depths=[64, 128, 256, 512],channel = 3):
+        self.depths = [channel] + depths
         self.reuse = False
 
     def __call__(self, inputs, training=False, name=''):
@@ -70,14 +70,15 @@ class Discriminator:
 
 class DCGAN:
     def __init__(self,
-                 batch_size=128, s_size=4, z_dim=100,
+                 batch_size=128, s_size=4, channel =3, z_dim=100,
                  g_depths=[1024, 512, 256, 128],
                  d_depths=[64, 128, 256, 512]):
         self.batch_size = batch_size
         self.s_size = s_size
         self.z_dim = z_dim
-        self.g = Generator(depths=g_depths, s_size=self.s_size)
-        self.d = Discriminator(depths=d_depths)
+        self.channel = channel
+        self.g = Generator(depths=g_depths, s_size=self.s_size,channel = self.channel)
+        self.d = Discriminator(depths=d_depths,channel = self.channel)
         self.z = tf.random_uniform([self.batch_size, self.z_dim], minval=-1.0, maxval=1.0)
 
     def loss(self, traindata):
